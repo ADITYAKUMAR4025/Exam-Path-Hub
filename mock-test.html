@@ -1,0 +1,347 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Exam Path Hub - Mock Test</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,sans-serif;background:#f1f4f9;color:#172033}
+header{background:#142b55;color:white;padding:16px}
+header h2{margin:0 0 5px}
+header p{margin:0;font-size:13px}
+.container{max-width:1050px;margin:18px auto;padding:12px}
+.card{background:white;padding:20px;border-radius:12px;margin-bottom:15px;box-shadow:0 2px 9px #0000000d}
+h2,h3{margin-top:0}
+label{display:block;font-weight:bold;margin:13px 0 7px}
+select,button{font-size:16px;padding:12px;border-radius:7px}
+select{width:100%;border:1px solid #ccd3df;background:white}
+button{border:0;cursor:pointer;font-weight:bold}
+.primary{background:#2059bd;color:white}
+.secondary{background:#e7edf8;color:#173765}
+.danger{background:#b42318;color:white}
+button:disabled{opacity:.45}
+.hidden{display:none!important}
+.note{background:#fff6d8;padding:12px;border-radius:8px;line-height:1.5}
+.small{font-size:13px;color:#5b6473}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.row>*{flex:1}
+.pill{padding:9px;background:#edf2fa;border-radius:7px;font-weight:bold}
+#timer{color:#b42318;font-size:22px;font-weight:bold}
+.progress{height:7px;background:#e1e6ef;border-radius:9px;overflow:hidden}
+#bar{height:100%;background:#2563eb;width:0}
+.options label{font-weight:normal;border:1px solid #d9dfeb;padding:12px;border-radius:8px;cursor:pointer;margin:8px 0}
+.options input{margin-right:9px}
+.palette{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:7px;margin-top:10px}
+.palette button{padding:10px 2px;background:#e5e9f1}
+.palette button.answered{background:#16834a;color:white}
+.palette button.review{background:#7545b8;color:white}
+.palette button.current{outline:3px solid #235dc2}
+.sectionbtn{background:#e8edf6;color:#19345e}
+.sectionbtn.active{background:#2059bd;color:white}
+.question-text{font-size:18px;line-height:1.5}
+.status{font-size:13px;line-height:1.9}
+footer{text-align:center;padding:20px;color:#657087;font-size:12px}
+@media(min-width:700px){.testgrid{display:grid;grid-template-columns:1fr 280px;gap:15px}.palette{grid-template-columns:repeat(5,1fr)}}
+</style>
+</head>
+<body>
+<header>
+<h2>Exam Path Hub</h2>
+<p>Online Practice Test • CBT-style interface</p>
+</header>
+
+<div class="container">
+<section id="setup" class="card">
+<h2>Mock Test Setup</h2>
+<p>Apna exam select karo, instructions padho aur language choose karo.</p>
+
+<label for="exam">Select Exam</label>
+<select id="exam">
+<option value="SSC CGL">SSC CGL</option>
+<option value="SSC CHSL">SSC CHSL</option>
+<option value="SSC MTS">SSC MTS</option>
+<option value="SSC GD">SSC GD</option>
+<option value="SSC CPO">SSC CPO</option>
+<option value="Railway">Railway</option>
+<option value="Banking">Banking</option>
+<option value="UPSC">UPSC</option>
+<option value="BPSC">BPSC</option>
+<option value="Bihar Police">Bihar Police</option>
+<option value="BSSC">BSSC</option>
+<option value="NDA/CDS">NDA/CDS</option>
+</select>
+
+<label for="language">Choose Language</label>
+<select id="language">
+<option value="en">English</option>
+<option value="hi">Hindi</option>
+</select>
+
+<label for="timerMode">Timer Mode</label>
+<select id="timerMode">
+<option value="overall">Overall Timer (SSC CGL Tier-I style)</option>
+<option value="sectional">Sectional Practice Timer (15 min each)</option>
+</select>
+
+<div class="note" style="margin-top:16px">
+<strong>Instructions</strong>
+<ul>
+<li>This is an independent practice test, not an official exam.</li>
+<li>Demo test mein 8 sample questions hain: 2 per section.</li>
+<li>Correct answer: +2 marks; wrong answer: -0.50 marks (SSC CGL Tier-I practice scoring).</li>
+<li>Unattempted question: 0 marks.</li>
+<li>Use Save &amp; Next to record an answer.</li>
+<li>Mark for Review se question ko baad mein check kar sakte ho.</li>
+<li>Timer khatam hone par test automatically submit hoga.</li>
+</ul>
+</div>
+<label>
+<input type="checkbox" id="agree">
+ I have read the instructions.
+</label>
+<button class="primary" id="startBtn" disabled>Start Test</button>
+<p class="small">Full official-length tests aur verified previous-year questions abhi is demo mein included nahi hain.</p>
+</section>
+
+<section id="test" class="hidden">
+<div class="card">
+<div class="row">
+<div><strong id="examTitle">Practice Test</strong><div class="small" id="questionCount"></div></div>
+<div style="text-align:right">Time Left<br><span id="timer">60:00</span></div>
+</div>
+<div class="progress" style="margin-top:12px"><div id="bar"></div></div>
+</div>
+
+<div class="row" id="sectionTabs"></div>
+
+<div class="testgrid">
+<div class="card">
+<div class="row">
+<div class="pill" id="sectionName">General Intelligence</div>
+<div class="small" style="text-align:right" id="qNumber">Question 1</div>
+</div>
+<hr>
+<div id="question" class="question-text"></div>
+<div id="options" class="options"></div>
+<div class="row" style="margin-top:20px">
+<button class="secondary" id="prevBtn">Previous</button>
+<button class="secondary" id="reviewBtn">Mark for Review</button>
+<button class="primary" id="saveBtn">Save &amp; Next</button>
+</div>
+<div class="row" style="margin-top:10px">
+<button class="secondary" id="clearBtn">Clear Response</button>
+<button class="primary" id="nextBtn">Next</button>
+</div>
+</div>
+
+<aside class="card">
+<h3>Question Palette</h3>
+<div class="status">
+<span style="color:#16834a">■ Answered</span><br>
+<span style="color:#7545b8">■ Marked for Review</span><br>
+<span>■ Not Answered</span>
+</div>
+<div class="palette" id="palette"></div>
+<hr>
+<p class="small" id="summary"></p>
+<button class="danger" id="submitBtn" style="width:100%">Submit Test</button>
+</aside>
+</div>
+</section>
+
+<section id="result" class="card hidden">
+<h2>Test Result</h2>
+<h3 id="score"></h3>
+<p id="details"></p>
+<div id="reviewResults"></div>
+<button class="primary" id="againBtn">Back to Mock Test Setup</button>
+</section>
+</div>
+
+<footer>Exam Path Hub • Independent practice platform</footer>
+
+<script>
+const sections = [
+ {name:"General Intelligence & Reasoning",questions:[
+  {en:"What comes next: 2, 4, 8, 16, ?",hi:"अगली संख्या क्या होगी: 2, 4, 8, 16, ?",opts:["18","24","32","30"],ans:2,exp:"Each number is multiplied by 2."},
+  {en:"Choose the odd one out.",hi:"अलग विकल्प चुनें।",opts:["Apple","Mango","Carrot","Banana"],ans:2,exp:"Carrot is generally classified as a vegetable."}
+ ]},
+ {name:"General Awareness",questions:[
+  {en:"What is the capital of India?",hi:"भारत की राजधानी क्या है?",opts:["Mumbai","New Delhi","Kolkata","Chennai"],ans:1,exp:"New Delhi is the capital of India."},
+  {en:"Which planet is known as the Red Planet?",hi:"लाल ग्रह किसे कहा जाता है?",opts:["Venus","Jupiter","Mars","Saturn"],ans:2,exp:"Mars is called the Red Planet."}
+ ]},
+ {name:"Quantitative Aptitude",questions:[
+  {en:"What is 25% of 200?",hi:"200 का 25% कितना है?",opts:["25","40","50","75"],ans:2,exp:"200 × 25 / 100 = 50."},
+  {en:"If 5x = 35, what is x?",hi:"यदि 5x = 35, तो x कितना है?",opts:["5","6","7","8"],ans:2,exp:"Divide both sides by 5: x = 7."}
+ ]},
+ {name:"English Comprehension",questions:[
+  {en:"Choose the synonym of 'Rapid'.",hi:"'Rapid' का समानार्थी शब्द चुनें।",opts:["Slow","Fast","Weak","Late"],ans:1,exp:"Rapid means fast or quick."},
+  {en:"Choose the correctly spelled word.",hi:"सही वर्तनी वाला शब्द चुनें।",opts:["Beautifull","Beutiful","Beautiful","Beautifal"],ans:2,exp:"The correct spelling is Beautiful."}
+ ]}
+];
+
+let allQuestions=[],answers=[],reviews=[],current=0,activeSection=0;
+let remaining=3600,sectionRemaining=900,clock=null,submitted=false;
+const $=id=>document.getElementById(id);
+
+function prepareQuestions(){
+ allQuestions=[];
+ sections.forEach((s,si)=>s.questions.forEach((q,qi)=>allQuestions.push({...q,section:si,local:qi})));
+ answers=Array(allQuestions.length).fill(null);
+ reviews=Array(allQuestions.length).fill(false);
+ current=0;activeSection=0;submitted=false;
+ remaining=3600;sectionRemaining=900;
+}
+
+function sectionIndices(si){
+ return allQuestions.map((q,i)=>q.section===si?i:-1).filter(i=>i>=0);
+}
+function fmt(t){
+ t=Math.max(0,t);
+ return String(Math.floor(t/60)).padStart(2,"0")+":"+String(t%60).padStart(2,"0");
+}
+function renderTabs(){
+ $("sectionTabs").innerHTML="";
+ sections.forEach((s,si)=>{
+  const b=document.createElement("button");
+  b.className="sectionbtn"+(si===activeSection?" active":"");
+  b.textContent=s.name;
+  b.onclick=()=>{activeSection=si;current=sectionIndices(si)[0];render();};
+  $("sectionTabs").appendChild(b);
+ });
+}
+function renderPalette(){
+ const pal=$("palette");pal.innerHTML="";
+ allQuestions.forEach((q,i)=>{
+  const b=document.createElement("button");
+  b.textContent=i+1;
+  if(answers[i]!==null)b.classList.add("answered");
+  if(reviews[i])b.classList.add("review");
+  if(i===current)b.classList.add("current");
+  b.title="Question "+(i+1);
+  b.onclick=()=>{current=i;activeSection=allQuestions[i].section;render();};
+  pal.appendChild(b);
+ });
+ const done=answers.filter(a=>a!==null).length;
+ $("summary").textContent="Answered: "+done+" / "+allQuestions.length+
+  "\nMarked for review: "+reviews.filter(Boolean).length;
+ $("bar").style.width=(done/allQuestions.length*100)+"%";
+}
+function render(){
+ const q=allQuestions[current];
+ if(!q)return;
+ renderTabs();
+ $("sectionName").textContent=sections[q.section].name;
+ $("qNumber").textContent="Question "+(current+1)+" of "+allQuestions.length;
+ $("question").textContent=($("language").value==="hi"?q.hi:q.en);
+ $("options").innerHTML="";
+ q.opts.forEach((opt,oi)=>{
+  const label=document.createElement("label");
+  const radio=document.createElement("input");
+  radio.type="radio";radio.name="answer";radio.value=oi;
+  radio.checked=answers[current]===oi;
+  radio.onchange=()=>{answers[current]=oi;renderPalette();};
+  label.appendChild(radio);
+  label.appendChild(document.createTextNode(opt));
+  $("options").appendChild(label);
+ });
+ $("prevBtn").disabled=current===0;
+ $("nextBtn").disabled=current===allQuestions.length-1;
+ renderPalette();
+}
+function goNext(){
+ if(current<allQuestions.length-1){
+  current++;
+  activeSection=allQuestions[current].section;
+  render();
+ }
+}
+function startClock(){
+ clearInterval(clock);
+ clock=setInterval(()=>{
+  if(submitted){clearInterval(clock);return;}
+  if($("timerMode").value==="overall"){
+   remaining--;
+   $("timer").textContent=fmt(remaining);
+   if(remaining<=0)finish(true);
+  }else{
+   sectionRemaining--;
+   $("timer").textContent=fmt(sectionRemaining);
+   if(sectionRemaining<=0){
+    const indices=sectionIndices(activeSection);
+    const nextSection=(activeSection+1)%sections.length;
+    if(nextSection===0 && activeSection===sections.length-1){
+     finish(true);return;
+    }
+    activeSection=nextSection;
+    current=sectionIndices(activeSection)[0];
+    sectionRemaining=900;
+    render();
+   }
+  }
+ },1000);
+}
+function finish(auto=false){
+ if(submitted)return;
+ if(!auto&&!confirm("Submit the test now? You cannot change answers after submission."))return;
+ submitted=true;clearInterval(clock);
+ let correct=0,wrong=0,unanswered=0;
+ allQuestions.forEach((q,i)=>{
+  if(answers[i]===null)unanswered++;
+  else if(answers[i]===q.ans)correct++;
+  else wrong++;
+ });
+ const score=correct*2-wrong*0.5;
+ $("test").classList.add("hidden");
+ $("result").classList.remove("hidden");
+ $("score").textContent="Score: "+score+" / "+(allQuestions.length*2);
+ $("details").textContent="Correct: "+correct+" | Wrong: "+wrong+" | Unattempted: "+unanswered+
+  (auto?" | Time ended.":"");
+ $("reviewResults").innerHTML="";
+ allQuestions.forEach((q,i)=>{
+  const div=document.createElement("div");
+  div.className="card";
+  const heading=document.createElement("strong");
+  heading.textContent="Q"+(i+1)+": "+q.en;
+  const status=document.createElement("p");
+  status.textContent="Your answer: "+(answers[i]===null?"Not attempted":q.opts[answers[i]])+
+   " | Correct answer: "+q.opts[q.ans];
+  const exp=document.createElement("p");
+  exp.className="small";exp.textContent=q.exp;
+  div.append(heading,status,exp);
+  $("reviewResults").appendChild(div);
+ });
+}
+$("agree").onchange=()=>{$("startBtn").disabled=!$("agree").checked;};
+$("startBtn").onclick=()=>{
+ prepareQuestions();
+ $("examTitle").textContent=$("exam").value+" Practice Mock";
+ $("questionCount").textContent=allQuestions.length+" demo questions";
+ $("setup").classList.add("hidden");
+ $("result").classList.add("hidden");
+ $("test").classList.remove("hidden");
+ $("timer").textContent=fmt($("timerMode").value==="overall"?remaining:sectionRemaining);
+ render();startClock();
+};
+$("prevBtn").onclick=()=>{if(current>0){current--;activeSection=allQuestions[current].section;render();}};
+$("nextBtn").onclick=goNext;
+$("saveBtn").onclick=()=>{goNext();};
+$("reviewBtn").onclick=()=>{
+ reviews[current]=!reviews[current];goNext();renderPalette();
+};
+$("clearBtn").onclick=()=>{answers[current]=null;render();};
+$("submitBtn").onclick=()=>finish(false);
+$("againBtn").onclick=()=>{
+ clearInterval(clock);
+ $("result").classList.add("hidden");
+ $("test").classList.add("hidden");
+ $("setup").classList.remove("hidden");
+ $("agree").checked=false;
+ $("startBtn").disabled=true;
+};
+</script>
+</body>
+  </html>
+  
